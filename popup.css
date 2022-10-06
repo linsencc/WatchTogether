@@ -1,0 +1,18 @@
+.container button {
+  border-radius: 2px;
+  width: 100%;
+  background-color: rgb(157, 157, 157);
+}
+
+.container button.current {
+  box-shadow: 0 0 0 2px white,
+              0 0 0 4px black;
+}
+
+div.container {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  margin: 24px 12px;
+  gap: 12px;
+}

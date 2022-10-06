@@ -1,0 +1,29 @@
+#roomPanel {
+    position: fixed;
+    z-index: 2147483647;
+    width: 200px;
+    height: 100px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px 0px, rgba(0, 0, 0, 0.2) 0px 6px 20px 0px;
+    top: 80%;
+    left: 80%;
+
+    opacity: 0.95;
+    transform: translate(0px, 0px);
+    display: flex;
+    flex-direction: column;
+
+    border-radius: 8px;
+    border-width: 0px;
+}
+
+#roomPanel .roomTitle {
+    color: rgb(81, 83, 83);
+    font-size: 14px;
+    margin: 4px;
+}
+
+#roomPanel .roomPanelUser {
+    font-size: 12px;
+    margin: 4px;
+}
