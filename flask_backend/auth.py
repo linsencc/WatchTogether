@@ -1,4 +1,4 @@
-from flask import request, make_response
+from flask import request, make_response, render_template
 from flask_login import login_user, login_required, logout_user, current_user
 
 from flask_backend.app import app, db
@@ -24,7 +24,7 @@ def register():
 
         # 账号或密码为空
         if not account or not password or not nickname:
-            rsp = {'code': 1, 'msg': '账号、密码和昵称不能为空', 'data': {}}
+            rsp = {'code': 1, 'msg': '账号密码和昵称不能为空', 'data': {}}
             return make_response(rsp, 400)
 
         # 检查用户是否被注册
@@ -44,6 +44,9 @@ def register():
         rsp = {'code': 0, 'msg': '注册成功', 'data': {}}
         return make_response(rsp, 200)
 
+    if request.method == 'GET':
+        return render_template("template/auth/login.html")
+
     # 兜底回复
     rsp = {'code': 1, 'msg': '注册失败', 'data': {}}
     return make_response(rsp, 400)
@@ -59,7 +62,7 @@ def login():
 
         # 账号或密码为空
         if not account or not password:
-            rsp = {'code': 1, 'msg': '账号与密码不能为空', 'data': {}}
+            rsp = {'code': 1, 'msg': '账号和密码不能为空', 'data': {}}
             return make_response(rsp, 400)
 
         # 从数据库获取对应用户
@@ -75,10 +78,9 @@ def login():
         return make_response(rsp, 400)
 
     if request.method == 'GET':
-        rsp = {'code': 0, 'msg': 'use post for login', 'data': {}}
-        return make_response(rsp, 200)
+        return render_template("auth/login.html")
 
-    # 兜底回复
+        # 兜底回复
     rsp = {'code': 1, 'msg': '登录失败', 'data': {}}
     return make_response(rsp, 400)
 
