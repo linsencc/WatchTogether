@@ -1,8 +1,7 @@
 from flask import request, make_response, render_template
 from flask_login import login_user, login_required, logout_user, current_user
 
-from flask_backend.app import app, db
-from flask_backend.app import login_manager
+from flask_backend.app import app, db, login_manager
 from flask_backend.models import User
 
 

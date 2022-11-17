@@ -1,0 +1,4 @@
+flask_backend/venv
+.idea
+*.pyc
+flask_backend/data.db
