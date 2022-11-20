@@ -15,15 +15,3 @@ class User(db.Model, UserMixin):
     def validate_password(self, password):      # 用于验证密码的方法，接受密码作为参数
         return check_password_hash(self.password_hash, password)  # 返回布尔值
 
-
-# class Room:
-#     def __init__(self, room_id: str, web_url: str):
-#         self.room_id = room_id
-#         self.web_url = web_url
-#         self.users = []
-#
-#     def add_user(self, user: User):
-#         self.users.append(user)
-#
-#     def delete_user(self, user: User):
-#         self.users.remove(user)

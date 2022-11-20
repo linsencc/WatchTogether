@@ -5,6 +5,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_socketio import SocketIO
+from gevent.pywsgi import WSGIServer
+from geventwebsocket.handler import WebSocketHandler
 
 
 # 如果是 Windows 系统，使用三个斜线
@@ -12,7 +14,6 @@ WIN = sys.platform.startswith('win')
 prefix = 'sqlite:///' if WIN else 'sqlite:////'
 
 
-# app 应用配置
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False    # 关闭对模型修改的监控
@@ -23,12 +24,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'da
 db = SQLAlchemy(app)
 
 
-# # websocket设置
+# websocket
 socketio = SocketIO(app)
 socketio.init_app(app, cors_allowed_origins='*')
 
 
-# 用户登录插件设置
+# 用户登录插件
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
@@ -40,7 +41,5 @@ from flask_backend import socketio_view
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', debug=True)
-
-    # http_server = WSGIServer(('0.0.0.0', 5000), app, handler_class=WebSocketHandler)
-    # http_server.serve_forever()
+    http_server = WSGIServer(('0.0.0.0', 5000), app, handler_class=WebSocketHandler)
+    http_server.serve_forever()
