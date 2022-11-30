@@ -2,6 +2,7 @@ import os
 import sys
 
 from flask import Flask
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_socketio import SocketIO
@@ -9,7 +10,7 @@ from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 
 
-# 如果是 Windows 系统，使用三个斜线
+# Windows系统，使用三个斜线
 WIN = sys.platform.startswith('win')
 prefix = 'sqlite:///' if WIN else 'sqlite:////'
 
@@ -20,7 +21,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False    # 关闭对模型修改�
 app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'data.db')
 
 
-# 数据库设置
+# 允许全局跨域
+cors = CORS(app, resources={r"/*": {"origins": "*"}},  supports_credentials=True)
+
+
+# 数据库
 db = SQLAlchemy(app)
 
 
@@ -29,15 +34,15 @@ socketio = SocketIO(app)
 socketio.init_app(app, cors_allowed_origins='*')
 
 
-# 用户登录插件
+# 用户登录
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 
 # 加载views中逻辑函数，models中数据模型，不可删除
-from flask_backend import views
 from flask_backend import auth
-from flask_backend import socketio_view
+from flask_backend import views_logit
+from flask_backend import views_socketio
 
 
 if __name__ == '__main__':

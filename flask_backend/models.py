@@ -1,9 +1,10 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from flask_backend.app import db
+from sqlalchemy_serializer import SerializerMixin
 
 
-class User(db.Model, UserMixin):
+class User(db.Model, UserMixin, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64))
     nickname = db.Column(db.String(64))         # 用户名

@@ -1,6 +1,7 @@
+import time
+
 from flask import request, make_response, render_template
 from flask_login import login_user, login_required, logout_user, current_user
-
 from flask_backend.app import app, db, login_manager
 from flask_backend.models import User
 
@@ -69,7 +70,7 @@ def login():
 
         # 验证用户名和密码是否一致
         if user and user.validate_password(password):
-            login_user(user)
+            login_user(user, remember=True)
             rsp = {'code': 0, 'msg': '登录成功', 'data': {}}
             return make_response(rsp, 200)
 
@@ -86,7 +87,7 @@ def login():
 
 # 用户登出
 @app.route('/logout', methods=['GET', 'POST'])
-@login_required             # 用于视图保护
+@login_required
 def logout():
     try:
         user_email = current_user.email
@@ -96,3 +97,17 @@ def logout():
     except Exception as e:
         rsp = {'code': 1, 'msg': str(e)}
         return make_response(rsp)
+
+
+# 用户信息
+@app.route('/profile', methods=['GET', 'POST'])
+def get_profile():
+    resp_data = {'code': 1, 'data': {}}
+
+    if current_user.is_authenticated:
+        resp_data['code'] = 0
+        resp_data['data'] = current_user.to_dict(rules=('-password_hash', '-id'))
+
+    # time.sleep(1)   # test
+    print(resp_data)
+    return make_response(resp_data)
