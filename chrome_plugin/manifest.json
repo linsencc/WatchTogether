@@ -7,12 +7,15 @@
     "service_worker": "background.js"
   },
   "permissions": [
-    "storage",
     "activeTab",
     "scripting",
-    "notifications",
     "cookies"
   ],
+
+  "host_permissions": [
+    "http://127.0.0.1:5000/"
+  ],
+
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
@@ -32,10 +35,11 @@
 
   "content_scripts": [
     {
-      "matches": ["https://www.bilibili.com/*"],
+      "matches": ["https://*.bilibili.com/*"],
       "js": [
-        "content/content.js",
-        "static/js/jquery-3.6.1.min.js"
+        "static/js/jquery-3.6.1.min.js",
+        "static/js/socket.io.min.js",
+        "content/content.js"
       ],
       "css":[
         "content/content.css"

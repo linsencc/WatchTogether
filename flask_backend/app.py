@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 
 from flask import Flask
 from flask_cors import CORS
@@ -17,12 +18,18 @@ prefix = 'sqlite:///' if WIN else 'sqlite:////'
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False    # 关闭对模型修改的监控
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = prefix + os.path.join(app.root_path, 'data.db')
 
 
+# chrome samesite设置，允许跨域携带cookie
+# https://learn.microsoft.com/zh-cn/azure/active-directory/develop/howto-handle-samesite-cookie-changes-chrome-browser
+app.config['REMEMBER_COOKIE_SAMESITE'] = "None"
+app.config['REMEMBER_COOKIE_SECURE'] = True
+
+
 # 允许全局跨域
-cors = CORS(app, resources={r"/*": {"origins": "*"}},  supports_credentials=True)
+cors = CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 
 # 数据库
@@ -36,7 +43,7 @@ socketio.init_app(app, cors_allowed_origins='*')
 
 # 用户登录
 login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+# login_manager.login_view = 'sign_in'
 
 
 # 加载views中逻辑函数，models中数据模型，不可删除

@@ -14,8 +14,8 @@ def load_user(email: str):                # 创建用户加载回调函数，接
 
 
 # 用户注册
-@app.route('/register', methods=['GET', 'POST'])
-def register():
+@app.route('/sign-up', methods=['GET', 'POST'])
+def sign_up():
     if request.method == 'POST':
         post_data = request.get_json()
         account = post_data.get('account', None)
@@ -40,6 +40,7 @@ def register():
         user.set_password(password=password)
         db.session.add(user)
         db.session.commit()
+        login_user(user, remember=True)
 
         rsp = {'code': 0, 'msg': '注册成功', 'data': {}}
         return make_response(rsp, 200)
@@ -53,8 +54,8 @@ def register():
 
 
 # 用户登录
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+@app.route('/sign-in', methods=['GET', 'POST'])
+def sign_in():
     if request.method == 'POST':
         post_data = request.get_json()
         account = post_data.get('account', None)
@@ -72,6 +73,7 @@ def login():
         if user and user.validate_password(password):
             login_user(user, remember=True)
             rsp = {'code': 0, 'msg': '登录成功', 'data': {}}
+            app.logger.info(rsp)
             return make_response(rsp, 200)
 
         rsp = {'code': 1, 'msg': '登录验证失败', 'data': {}}
@@ -86,9 +88,9 @@ def login():
 
 
 # 用户登出
-@app.route('/logout', methods=['GET', 'POST'])
+@app.route('/sign-out', methods=['GET', 'POST'])
 @login_required
-def logout():
+def sign_out():
     try:
         user_email = current_user.email
         logout_user()
@@ -108,6 +110,5 @@ def get_profile():
         resp_data['code'] = 0
         resp_data['data'] = current_user.to_dict(rules=('-password_hash', '-id'))
 
-    # time.sleep(1)   # test
-    print(resp_data)
+    app.logger.info(resp_data)
     return make_response(resp_data)
