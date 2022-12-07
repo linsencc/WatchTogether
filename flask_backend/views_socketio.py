@@ -4,7 +4,7 @@ from flask_socketio import emit, disconnect
 from flask_login import current_user
 
 
-namespace_room = '/dcenter'
+namespace_room = '/Room'
 
 
 def authenticated_only(f):

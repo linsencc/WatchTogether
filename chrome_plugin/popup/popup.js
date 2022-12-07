@@ -10,34 +10,37 @@ $('#test').click(async () => {
     //     console.log(JSON.stringify(data));
     //     console.log(JSON.stringify(status));
     // });
+    let roomId = $("#room-id-input").val();
 
-   let [tabs] = await chrome.tabs.query({active: true, currentWindow: true});
+    let [tabs] = await chrome.tabs.query({active: true, currentWindow: true});
 
     let message = {
-        info: '来自popup的情书💌'
+        action: 'createRoom',
+        data: {
+            roomId: roomId,
+        }
     }
+
 
     chrome.tabs.sendMessage(tabs.id, message, res => {
         console.log('popup=>content')
         console.log(res)
     })
-   //
-   //  let hostUrl = 'http://127.0.0.1:5000/dcenter';
-   //
-   //  socket = io.connect(hostUrl);
-   //  let x = socket.emit('my_event', {data: "popup tests"});
+    //
+    //  let hostUrl = 'http://127.0.0.1:5000/dcenter';
+    //
+    //  socket = io.connect(hostUrl);
+    //  let x = socket.emit('my_event', {data: "popup tests"});
 
     // console.log(socket);
     // console.log(x);
 });
 
 
-chrome.runtime.onMessage.addListener((req,sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
     sendResponse('我收到了你的来信')
     console.log('接收了来自 content.js的消息', req.info)
 })
-
-
 
 
 // Start Utils ----------------------------------------------------------
@@ -46,25 +49,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('popup DOMContentLoaded done');
     let url = hostUrl + 'profile';
 
-    $.post(url, function(data,status){
-        if(status === 'success' && data['code'] === 0){
+    $.post(url, function (data, status) {
+        if (status === 'success' && data['code'] === 0) {
             showDom('content');
             renderContent(data);
-        }else{
+        } else {
             showDom('signIn');
         }
     });
 });
 
-function setPageCloseModal(text, time){
+function setPageCloseModal(text, time) {
     let delay = time;
-    let interval = setInterval(function (){
-        let modalText = String(text) + ", " + Number(delay/1000) + "s 后关闭提示";
+    let interval = setInterval(function () {
+        let modalText = String(text) + ", " + Number(delay / 1000) + "s 后关闭提示";
         $("#login-modal .modal-title").text(modalText);
-        if(delay == time){
+        if (delay == time) {
             $("#login-modal").modal("show");
         }
-        if(delay <= 0) {
+        if (delay <= 0) {
             clearInterval(interval);
             $("#login-modal").modal("hide");
         }
@@ -73,41 +76,36 @@ function setPageCloseModal(text, time){
 }
 
 
-function renderContent(data){
+function renderContent(data) {
     let nickname = data['data']['nickname'];
     $('.container.content .profile .user-name').text(nickname);
 }
 
 
-function showDom(name){
+function showDom(name) {
     loadingDom.css('display', 'none');
     contentDom.css('display', 'none');
     signInDom.css('display', 'none');
 
-    if(name === 'loading') loadingDom.css('display', 'flex');
-    if(name === 'content') contentDom.css('display', 'flex');
-    if(name === 'signIn') signInDom.css('display', 'flex');
+    if (name === 'loading') loadingDom.css('display', 'flex');
+    if (name === 'content') contentDom.css('display', 'flex');
+    if (name === 'signIn') signInDom.css('display', 'flex');
 }
+
 // End Utils ---------------------------------------------------------------
-
-
-
 
 
 // Start 内容页面 ---------------------------------------------------------------------
 // 用户注销
 $('#sign-out').click(() => {
     let url = hostUrl + 'sign-out';
-    $.post(url, function(data,status){
-        if(status === 'success' && data['code'] === 0){
+    $.post(url, function (data, status) {
+        if (status === 'success' && data['code'] === 0) {
             showDom('signIn')
         }
     });
 })
 // End 内容页面-----------------------------------------------------------------------
-
-
-
 
 
 // Start 用户登录页面 ------------------------------------------------------------------
@@ -127,7 +125,7 @@ $(".login-sign-up").click(function () {
     $(".login-button").attr("action", "sign-up");
 });
 
-$(".login-button").click(function() {
+$(".login-button").click(function () {
     let action = $(".login-button").attr("action")
     if (action == "sign-in") signIn();
     if (action == "sign-up") signUp();
@@ -145,22 +143,22 @@ function signIn() {
     }
 
     $.ajax({
-        url         : hostUrl + 'sign-in',
-        type        : 'POST',
-        dataType    : 'json',
-        contentType : 'application/json;charset=UTF-8',
+        url: hostUrl + 'sign-in',
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json;charset=UTF-8',
         xhrFields: {
             withCredentials: true
         },
-        data        : JSON.stringify(postData),
-        success     : function (res) {
+        data: JSON.stringify(postData),
+        success: function (res) {
             let msg = res["msg"];
             setPageCloseModal(msg, 3000);
             showDom('content');
 
-            chrome.cookies.set({ url: hostUrl, name: "CookieVar", value: "123" });
+            chrome.cookies.set({url: hostUrl, name: "CookieVar", value: "123"});
         },
-        error        : function (res){
+        error: function (res) {
             let msg = res.responseJSON["msg"];
             setPageCloseModal(msg, 3000);
         }
@@ -179,21 +177,22 @@ function signUp() {
     }
 
     $.ajax({
-        url         : hostUrl + 'sign-up',
-        type        : 'POST',
-        dataType    : 'json',
-        contentType : 'application/json;charset=UTF-8',
-        data        : JSON.stringify(postData),
-        success     : function (res) {
+        url: hostUrl + 'sign-up',
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json;charset=UTF-8',
+        data: JSON.stringify(postData),
+        success: function (res) {
             let msg = res["msg"];
             setPageCloseModal(msg, 3000);
         },
-        error        : function (res){
+        error: function (res) {
             let msg = res.responseJSON["msg"];
             setPageCloseModal(msg, 3000);
         }
     });
 }
+
 // End 用户登录页面 -------------------------------------------------------
 
 
