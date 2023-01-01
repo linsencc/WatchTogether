@@ -1,9 +1,10 @@
+import json
 import time
 
 from flask import request, make_response, render_template
 from flask_login import login_user, login_required, logout_user, current_user
-from flask_backend.app import app, db, login_manager
-from flask_backend.models import User
+from app import app, db, login_manager
+from models import User
 
 
 # 用户加载回调函数
@@ -72,7 +73,7 @@ def sign_in():
         # 验证用户名和密码是否一致
         if user and user.validate_password(password):
             login_user(user, remember=True)
-            rsp = {'code': 0, 'msg': '登录成功', 'data': {}}
+            rsp = {'code': 0, 'msg': '登录成功', 'data': {'nickname': user.nickname, 'email': user.email}}
             app.logger.info(rsp)
             return make_response(rsp, 200)
 

@@ -1,5 +1,5 @@
 import functools
-from flask_backend.app import socketio, app
+from app import socketio, app
 from flask_socketio import emit, disconnect
 from flask_login import current_user
 

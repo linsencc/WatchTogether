@@ -11,6 +11,9 @@ from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 
 
+logging.basicConfig(level='INFO')
+
+
 # Windows系统，使用三个斜线
 WIN = sys.platform.startswith('win')
 prefix = 'sqlite:///' if WIN else 'sqlite:////'
@@ -39,17 +42,18 @@ db = SQLAlchemy(app)
 # websocket
 socketio = SocketIO(app)
 socketio.init_app(app, cors_allowed_origins='*')
+socketio_namespace = '/room'
 
 
 # 用户登录
 login_manager = LoginManager(app)
-# login_manager.login_view = 'sign_in'
+login_manager.login_view = 'sign_in'
 
 
 # 加载views中逻辑函数，models中数据模型，不可删除
-from flask_backend import auth
-from flask_backend import views_logit
-from flask_backend import views_socketio
+from views_auth import *
+from views_logit import *
+from views_socketio import *
 
 
 if __name__ == '__main__':
