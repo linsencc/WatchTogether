@@ -5,25 +5,63 @@
     <title>SocketIO Demo</title>
     <script type="text/javascript" src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/socket.io/4.5.3/socket.io.min.js"></script>
+    <link href="https://www.w3school.com.cn/lib/bs/bootstrap.css" rel="stylesheet">
+    <script src="https://www.w3school.com.cn/lib/bs/bootstrap.js"></script>
+
+    <script>
+        let Namespace = '/room';
+        let RoomNumber = null;
+        let Socket = null;
+        let WebsocketUrl = null;
+
+        function create() {
+            let postData = {
+                roomNumber: $('#room_number').val()
+            }
+
+            console.log('postdata', postData);
+
+            $.ajax({
+                url: "http://127.0.0.1:5000/create-room",
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify(postData),
+                success: function (res) {
+                    console.log(res)
+
+                    WebsocketUrl = location.protocol + '//' + document.domain + ':' + location.port + Namespace;
+                    Socket = io.connect(WebsocketUrl);
+
+                    Socket.on('connect', function () {
+                        let data = {
+                            url: WebsocketUrl,
+                            room_number: RoomNumber,
+                            video_state: 0,
+                            video_progress: 0,
+                        }
+
+                        Socket.emit('user-init', data);
+                    });
+                },
+                error: function (res) {
+                    console.log(res)
+                }
+            });
+
+        };
+    </script>
 </head>
+
 <body>
+<h2 class="container-fluid p-5 bg-primary text-white text-center">Demo of SocketIO</h2>
 
-<h2>Demo of SocketIO</h2>
-<script>
-
-$(document).ready(function () {
-    namespace = '/dcenter';
-    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
-    console.log(socket)
-
-    var x = socket.emit('my_event', {data: "tests"});
-    console.log("x ", x);
-
-    socket.on("xxxx", function (res) {
-        console.log('t ', res);
-    });
-
-});
-</script>
+<div class="container" style="display: flex; justify-content: center">
+    <div style="display: flex; gap: 10px; align-items: end">
+        <input style="width: 300px" class="form-control" id="room_number" placeholder="请输入房间号" name="email">
+        <button type="submit" class="btn btn-primary" id="join" onclick="create()">创建房间</button>
+        <button type="submit" class="btn btn-primary" id="join" onclick="join()">加入房间</button>
+    </div>
+</div>
 </body>
 </html>

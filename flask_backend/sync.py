@@ -8,15 +8,14 @@ class User:
         self.email = email
         self.nickname = nickname
 
-        # todo socket ?
-
+        self._socketio = False
         self._url = None
         self._video_state = -1  # onload oncanplay onplaying onpause
         self._video_progress = -1
 
     @staticmethod
     def keys():
-        return 'email', 'nickname', 'url', 'video_state', 'video_progress'
+        return 'email', 'nickname', 'url', 'socketio', 'video_state', 'video_progress'
 
     def __getitem__(self, item):
         return getattr(self, item)
@@ -28,6 +27,14 @@ class User:
     @url.setter
     def url(self, url: str):
         self._url = url
+
+    @property
+    def socketio(self):
+        return self._socketio
+
+    @socketio.setter
+    def socketio(self, value):
+        self._socketio = value
 
     @property
     def video_state(self):
@@ -53,8 +60,6 @@ class Room:
 
     def get_users_info(self):
         # 获取对象的字典表示形式
-        # data = json.dumps(self.users, default=lambda obj: obj.__dict__)
-        # data = json.loads(data)
         data = {k: dict(v) for k, v in self.users.items()}
         return data
 
@@ -122,18 +127,40 @@ class Room:
 class Manage:
     def __init__(self):
         self.rooms: dict[str, Room] = {}  # room number -> room
+        self.user_to_room: dict[str, Room] = {}  # email -> room
 
-    def get_room(self, room_number: str) -> Room:
+    def get_room(self, room_number: str):
+        if room_number in self.rooms:
+            room = self.rooms[room_number]
+            return room
+        return None
+
+    def create_room(self, room_number):
         if room_number not in self.rooms:
             room = Room(room_number)
             self.rooms[room_number] = room
-
-        room = self.rooms[room_number]
-        return room
+            return room
+        return None
 
     def delete_room(self, room_number: str) -> bool:
         if room_number in self.rooms:
             del self.rooms[room_number]
             return True
+        return False
 
+    def get_room_by_user(self, email: str):
+        if email in self.user_to_room[email]:
+            return self.user_to_room[email]
+        return None
+
+    def create_user_to_room(self, email: str, room: Room) -> bool:
+        if email not in self.user_to_room:
+            self.user_to_room[email] = room
+            return True
+        return False
+
+    def delete_user_to_room(self, email: str) -> bool:
+        if email in self.user_to_room:
+            del self.user_to_room[email]
+            return True
         return False
